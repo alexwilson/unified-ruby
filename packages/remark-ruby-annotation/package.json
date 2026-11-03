@@ -45,5 +45,9 @@
     "mdast-util-ruby": "workspace:^",
     "micromark-extension-ruby": "workspace:^",
     "unified": "^11.0.0"
+  },
+  "devDependencies": {
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0"
   }
 }
