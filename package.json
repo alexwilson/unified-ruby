@@ -15,7 +15,8 @@
     "test-api-prod": "node --conditions production --test \"test/**/*.test.js\"",
     "test-api": "pnpm run test-api-dev && pnpm run test-api-prod",
     "test-coverage": "c8 --100 --reporter text --reporter lcov --include \"packages/**\" pnpm run test-api",
-    "test": "pnpm run build && pnpm run test-types && pnpm run test-coverage"
+    "test": "pnpm run build && pnpm run test-types && pnpm run test-coverage",
+    "test-lowest": "tsc --build --clean && tsc --build --noCheck && pnpm --filter micromark-extension-ruby run build && pnpm run test-coverage"
   },
   "prettier": {
     "bracketSpacing": false,

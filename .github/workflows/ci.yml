@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [22, 24]
+        node: [22, 24, 26]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -24,6 +24,24 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check
       - run: pnpm test
+  lowest:
+    # Install the lowest version in each declared range, on the oldest
+    # maintained Node.js. Types are not checked here: the lowest versions of
+    # our dependencies and the newer versions that the test tools get are
+    # separate copies, and TypeScript does not match types across copies.
+    name: lowest versions (node 22)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: rm pnpm-lock.yaml
+      - run: pnpm install --no-frozen-lockfile --config.resolution-mode=lowest-direct
+      - run: pnpm run test-lowest
   audit:
     # Dependabot alerts do not read the pnpm 12 lockfile yet, so CI does it.
     runs-on: ubuntu-latest
