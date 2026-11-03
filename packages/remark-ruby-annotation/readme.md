@@ -91,7 +91,8 @@ Returns nothing (`undefined`).
 Configuration (TypeScript type).
 
 - `fullWidth` (`boolean`, default: `false`): whether `｛`, `｜` and `｝` also
-  act as delimiters.
+  act as delimiters. With this option, the serializer also escapes `｛`, `｜`
+  and `｝`. It always writes ASCII delimiters.
 - `rp` (`boolean`, default: `false`): whether to add `<rp>` elements around
   each `<rt>`.
 
