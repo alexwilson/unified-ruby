@@ -10,6 +10,8 @@ import {builtinModules} from 'node:module'
 import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
+import {publint} from 'publint'
+import {formatMessage} from 'publint/utils'
 
 const root = new URL('../packages/', import.meta.url)
 
@@ -65,12 +67,30 @@ const builtins = new Set(builtinModules)
 
 for (const name of Object.keys(expectedFiles)) {
   test('package contents: ' + name, async function (t) {
-    const unpacked = pack(name)
+    const {tarball, unpacked} = pack(name)
     const manifest = JSON.parse(
       fs.readFileSync(path.join(unpacked, 'package.json'), 'utf8')
     )
     /** @type {Record<string, string>} */
     const dependencies = manifest.dependencies || {}
+
+    await t.test('publint finds nothing', async function () {
+      const buffer = fs.readFileSync(tarball)
+      const result = await publint({
+        pack: {
+          tarball: buffer.buffer.slice(
+            buffer.byteOffset,
+            buffer.byteOffset + buffer.byteLength
+          )
+        },
+        level: 'suggestion',
+        strict: true
+      })
+      assert.deepEqual(
+        result.messages.map((message) => formatMessage(message, result.pkg)),
+        []
+      )
+    })
 
     await t.test('file list', function () {
       assert.deepEqual(listFiles(unpacked), expectedFiles[name])
@@ -136,7 +156,7 @@ for (const name of Object.keys(expectedFiles)) {
 
 /**
  * @param {string} name
- * @returns {string}
+ * @returns {{tarball: string, unpacked: string}}
  */
 function pack(name) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'pack-' + name))
@@ -147,7 +167,7 @@ function pack(name) {
   )
   const tarball = JSON.parse(output.slice(output.indexOf('{'))).filename
   execFileSync('tar', ['-xzf', tarball, '-C', directory])
-  return path.join(directory, 'package')
+  return {tarball, unpacked: path.join(directory, 'package')}
 }
 
 /**
