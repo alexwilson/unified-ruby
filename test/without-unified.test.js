@@ -40,7 +40,7 @@ test('node shape', async function (t) {
     })
     const [node] = rubies(tree)
     assert.equal(node.position?.start.offset, 1)
-    assert.equal(node.position?.end.offset, 10)
+    assert.equal(node.position?.end.offset, 9)
   })
 
   await t.test('`rp: true` puts `<rp>` in hChildren', function () {

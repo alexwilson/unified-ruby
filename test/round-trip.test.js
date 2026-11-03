@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {denden, remarkDendenRuby} from './cases.js'
-import {parse, serialize} from './util.js'
+import {parse, rubies, serialize} from './util.js'
 
 const positive = [
   ...denden.map((d) => d.input),
@@ -123,6 +123,12 @@ test('serializer output', async function (t) {
 
   await t.test('a space at the start of the base is a reference', function () {
     assert.equal(one(' a', ['b']), '{&#x20;a|b}\n')
+  })
+
+  await t.test('line endings are references', function () {
+    assert.equal(one('a\nb', ['c\rd']), '{a&#xA;b|c&#xD;d}\n')
+    const [node] = rubies(parse(one('a\nb', ['c\rd'])))
+    assert.deepEqual([node.value, node.readings], ['a\nb', ['c\rd']])
   })
 
   await t.test(

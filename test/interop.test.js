@@ -67,8 +67,12 @@ test('GFM table cells', async function (t) {
     )
   })
 
-  // To do (implementation): find out what `| {漢字\|かんじ} | x |` gives,
-  // add a test that pins it, and document it in the README.
+  await t.test('an escaped `|` is content, so no ruby', function () {
+    assert.match(
+      withGfm(head + '| {漢字\\|かんじ} | x |'),
+      /<td>{漢字\|かんじ}<\/td>/
+    )
+  })
 })
 
 test('remark-gfm and remark-ruby-annotation in either order', function () {
