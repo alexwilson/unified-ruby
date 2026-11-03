@@ -1,0 +1,5 @@
+{
+  "packages/micromark-extension-ruby": "0.0.0",
+  "packages/mdast-util-ruby": "0.0.0",
+  "packages/remark-ruby-annotation": "0.0.0"
+}

@@ -1,0 +1,51 @@
+name: release
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+  publish:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # Node 24 ships npm 11, which supports trusted publishing.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      # `pnpm pack` replaces `workspace:^` with real versions. `npm publish`
+      # then uses OIDC trusted publishing and adds provenance.
+      - name: publish released packages
+        env:
+          PATHS: ${{ needs.release-please.outputs.paths_released }}
+        run: |
+          for path in $(echo "$PATHS" | jq -r '.[]'); do
+            tarball=$(cd "$path" && pnpm pack --pack-destination "$RUNNER_TEMP" | tail -1)
+            npm publish "$tarball" --access public --provenance
+          done

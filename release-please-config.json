@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": false,
+  "include-component-in-tag": true,
+  "separate-pull-requests": false,
+  "plugins": ["node-workspace"],
+  "packages": {
+    "packages/micromark-extension-ruby": {},
+    "packages/mdast-util-ruby": {},
+    "packages/remark-ruby-annotation": {}
+  }
+}
