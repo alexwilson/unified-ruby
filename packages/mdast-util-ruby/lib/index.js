@@ -15,7 +15,7 @@
  */
 
 import {ok as assert} from 'devlop'
-import {decodeRuby} from './decode.js'
+import {decodeRuby, rubySegments} from 'micromark-extension-ruby/util'
 
 /**
  * Constructs in phrasing where ruby is not parsed, so no escape is needed.
@@ -97,18 +97,12 @@ export function rubyFromMarkdown(options) {
    */
   function exitRuby(token) {
     const node = current(this)
-    const characters = [...node.value]
     /** @type {Array<ElementContent>} */
     const children = []
 
-    if (characters.length === node.readings.length) {
-      for (const [index, character] of characters.entries()) {
-        children.push({type: 'text', value: character})
-        annotation(children, node.readings[index])
-      }
-    } else {
-      children.push({type: 'text', value: node.value})
-      annotation(children, node.readings.join(''))
+    for (const [text, reading] of rubySegments(node.value, node.readings)) {
+      children.push({type: 'text', value: text})
+      annotation(children, reading)
     }
 
     node.data = {hName: 'ruby', hChildren: children}
