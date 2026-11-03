@@ -36,11 +36,19 @@
     "lib/",
     "index.d.ts",
     "index.js",
+    "util.d.ts",
+    "util.js",
     "license"
   ],
   "exports": {
-    "development": "./dev/index.js",
-    "default": "./index.js"
+    ".": {
+      "development": "./dev/index.js",
+      "default": "./index.js"
+    },
+    "./util": {
+      "development": "./dev/util.js",
+      "default": "./util.js"
+    }
   },
   "dependencies": {
     "devlop": "^1.0.0",

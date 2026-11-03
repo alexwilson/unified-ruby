@@ -8,3 +8,4 @@ packages/micromark-extension-ruby/index.js
 packages/micromark-extension-ruby/lib/
 .DS_Store
 !packages/micromark-extension-ruby/dev/index.d.ts
+packages/micromark-extension-ruby/util.js

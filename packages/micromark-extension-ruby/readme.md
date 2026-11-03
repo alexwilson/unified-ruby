@@ -105,6 +105,36 @@ Configuration (TypeScript type).
 
 Give the same options to both functions.
 
+### `micromark-extension-ruby/util`
+
+Helpers for packages that compile ruby tokens, for example
+[`mdast-util-ruby`][mdast-util-ruby]. Most users do not need them.
+
+```js
+import {decodeRuby, rubySegments} from 'micromark-extension-ruby/util'
+```
+
+#### `decodeRuby(value, fullWidth?)`
+
+Decode the source of a `rubyBase` or `rubyText` token.
+
+- `value` (`string`): the source text of the token.
+- `fullWidth` (`boolean`, default: `false`): whether `\｛`, `\｜` and `\｝`
+  are decoded.
+
+Returns the decoded value (`string`). CommonMark escapes and character
+references are decoded.
+
+#### `rubySegments(base, readings)`
+
+Pair the base with the readings, by the rules for mono and group ruby.
+
+- `base` (`string`): the decoded base.
+- `readings` (`Array<string>`): the decoded readings.
+
+Returns an array of `[text, reading]` pairs: one pair for each character for
+mono ruby, or one pair for group ruby.
+
 ## Syntax
 
 Group ruby puts one reading over the full base:

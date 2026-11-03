@@ -3,7 +3,7 @@
  * @import {CompileContext, HtmlExtension} from 'micromark-util-types'
  */
 
-import {decodeRuby} from './decode.js'
+import {decodeRuby, rubySegments} from './util.js'
 
 /**
  * Create an HTML extension for `micromark` to support DenDen ruby when
@@ -43,17 +43,11 @@ export function rubyHtml(options) {
         )
       },
       ruby() {
-        const characters = [...base]
         this.tag('<ruby>')
 
-        if (characters.length === readings.length) {
-          for (const [index, character] of characters.entries()) {
-            this.raw(this.encode(character))
-            annotation.call(this, readings[index])
-          }
-        } else {
-          this.raw(this.encode(base))
-          annotation.call(this, readings.join(''))
+        for (const [text, reading] of rubySegments(base, readings)) {
+          this.raw(this.encode(text))
+          annotation.call(this, reading)
         }
 
         this.tag('</ruby>')
