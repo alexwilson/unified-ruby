@@ -14,7 +14,8 @@ const inputs = {
   'many `{`': '{'.repeat(100_000),
   'many `{a|`': '{a|'.repeat(33_334),
   'one `{` and many `a|`': '{' + 'a|'.repeat(49_999) + 'a',
-  'many `{a|b`': '{a|b'.repeat(25_000)
+  'many `{a|b`': '{a|b'.repeat(25_000),
+  'many `{a}`': '{a}'.repeat(33_334)
 }
 
 /**
