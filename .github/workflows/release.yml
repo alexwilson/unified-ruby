@@ -19,14 +19,16 @@ jobs:
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-  publish:
+  pack:
+    # Build, test and pack with read-only permissions. The development
+    # dependencies run here, never in the job that can publish.
     needs: release-please
     if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
-    environment: npm
     permissions:
       contents: read
-      id-token: write
+    outputs:
+      sums: ${{ steps.pack.outputs.sums }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -34,18 +36,62 @@ jobs:
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          # Node 24 ships npm 11, which supports trusted publishing.
           node-version: 24
-          registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
-      # `pnpm pack` replaces `workspace:^` with real versions. `npm publish`
-      # then uses OIDC trusted publishing and adds provenance.
-      - name: publish released packages
+      # `pnpm pack` replaces `workspace:^` with real versions.
+      - id: pack
+        name: pack released packages
         env:
           PATHS: ${{ needs.release-please.outputs.paths_released }}
         run: |
+          mkdir -p "$RUNNER_TEMP/dist"
           for path in $(echo "$PATHS" | jq -r '.[]'); do
-            tarball=$(cd "$path" && pnpm pack --pack-destination "$RUNNER_TEMP" | tail -1)
-            npm publish "$tarball" --access public --provenance
+            (cd "$path" && pnpm pack --pack-destination "$RUNNER_TEMP/dist")
+          done
+          cd "$RUNNER_TEMP/dist"
+          sha256sum -- *.tgz > SHA256SUMS
+          cat SHA256SUMS
+          {
+            echo 'sums<<EOF'
+            cat SHA256SUMS
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: packages
+          path: ${{ runner.temp }}/dist
+          if-no-files-found: error
+  publish:
+    # No checkout and no install: only npm and the tarballs.
+    needs: pack
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # Node 24 ships npm 11, which supports trusted publishing.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: packages
+          path: dist
+      # Check against the sums from the job output too, not only the file in
+      # the artifact: a changed artifact could change its own SHA256SUMS.
+      - name: check tarballs
+        working-directory: dist
+        env:
+          SUMS: ${{ needs.pack.outputs.sums }}
+        run: |
+          sha256sum --check SHA256SUMS
+          printf '%s\n' "$SUMS" > "$RUNNER_TEMP/SHA256SUMS"
+          sha256sum --check "$RUNNER_TEMP/SHA256SUMS"
+      - name: publish
+        working-directory: dist
+        run: |
+          for tarball in *.tgz; do
+            npm publish "./$tarball" --access public --provenance
           done
