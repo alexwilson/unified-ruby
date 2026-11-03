@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "customConditions": ["development"],
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "exactOptionalPropertyTypes": true,
+    "lib": ["es2022"],
+    "module": "nodenext",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022"
+  },
+  "exclude": [
+    "**/node_modules/",
+    "coverage/",
+    "test/",
+    "packages/micromark-extension-ruby/index.js",
+    "packages/micromark-extension-ruby/lib/"
+  ],
+  "include": ["packages/**/*.js", "packages/**/index.d.ts"]
+}

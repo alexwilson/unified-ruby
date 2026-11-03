@@ -1,0 +1,54 @@
+{
+  "name": "micromark-extension-ruby",
+  "version": "0.0.0",
+  "description": "micromark extension to support DenDen ruby annotations (`{漢字|かんじ}`)",
+  "license": "MIT",
+  "keywords": [
+    "micromark",
+    "micromark-extension",
+    "ruby",
+    "furigana",
+    "denden",
+    "markdown",
+    "unified"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexwilson/unified-ruby.git",
+    "directory": "packages/micromark-extension-ruby"
+  },
+  "bugs": "https://github.com/alexwilson/unified-ruby/issues",
+  "author": "Alex Wilson <alex@alexwilson.tech>",
+  "contributors": [
+    "Alex Wilson <alex@alexwilson.tech>"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "dev/",
+    "lib/",
+    "index.d.ts",
+    "index.js",
+    "license"
+  ],
+  "exports": {
+    "development": "./dev/index.js",
+    "default": "./index.js"
+  },
+  "dependencies": {
+    "devlop": "^1.0.0",
+    "micromark-util-character": "^2.0.0",
+    "micromark-util-symbol": "^2.0.0",
+    "micromark-util-types": "^2.0.0"
+  },
+  "scripts": {
+    "build": "micromark-build"
+  }
+}

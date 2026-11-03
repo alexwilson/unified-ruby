@@ -1,0 +1,59 @@
+{
+  "private": true,
+  "name": "unified-ruby",
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc --build --clean && tsc --build && pnpm --filter micromark-extension-ruby run build",
+    "check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude && tsc --build --clean && tsc --build",
+    "format": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",
+    "test-types": "tsc -p test/tsconfig.json",
+    "test-api-dev": "node --conditions development --test \"test/**/*.test.js\"",
+    "test-api-prod": "node --conditions production --test \"test/**/*.test.js\"",
+    "test-api": "pnpm run test-api-dev && pnpm run test-api-prod",
+    "test-coverage": "c8 --100 --reporter text --reporter lcov --include \"packages/**\" pnpm run test-api",
+    "test": "pnpm run build && pnpm run test-types && pnpm run test-coverage"
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "none",
+    "useTabs": false
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.5",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^22.20.5",
+    "c8": "^12.0.0",
+    "hast-util-to-html": "^9.0.5",
+    "mdast-util-from-markdown": "^2.1.0",
+    "mdast-util-gfm": "^3.1.0",
+    "mdast-util-ruby": "workspace:^",
+    "mdast-util-to-hast": "^13.2.1",
+    "mdast-util-to-markdown": "^2.2.0",
+    "mdast-util-to-string": "^4.0.0",
+    "micromark": "^4.0.3",
+    "micromark-build": "^2.0.4",
+    "micromark-extension-cjk-friendly": "^2.0.2",
+    "micromark-extension-gfm": "^3.0.0",
+    "micromark-extension-ruby": "workspace:^",
+    "micromark-util-types": "^2.0.3",
+    "prettier": "^3.9.10",
+    "rehype-stringify": "^10.0.1",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "remark-ruby-annotation": "workspace:^",
+    "remark-stringify": "^11.0.0",
+    "typescript": "^6.0.3",
+    "unified": "^11.0.5",
+    "unist-util-remove-position": "^5.0.0",
+    "unist-util-visit": "^5.2.0"
+  }
+}

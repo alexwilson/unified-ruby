@@ -1,0 +1,17 @@
+packages:
+  - packages/*
+
+# Supply-chain settings. pnpm 12 already sets strictDepBuilds and
+# blockExoticSubdeps to true. These settings make the rules stricter.
+minimumReleaseAge: 10080
+# Exact versions only. Each one has a manual provenance check.
+# semver@6.3.2: built by the npm/node-semver release workflow. Version 6.3.1
+# has no provenance, so trustPolicy blocks it, and nothing else matches ^6.3.1.
+minimumReleaseAgeExclude:
+  - 'semver@6.3.2'
+trustPolicy: no-downgrade
+allowBuilds: {}
+# Older releases published before the maintainer used provenance.
+# Exclude exact versions only, after a manual check.
+trustPolicyExclude:
+  - 'undici-types@6.21.0'

@@ -1,0 +1,49 @@
+{
+  "name": "remark-ruby-annotation",
+  "version": "0.0.0",
+  "description": "remark plugin to support DenDen ruby annotations (`{漢字|かんじ}`)",
+  "license": "MIT",
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "plugin",
+    "mdast",
+    "ruby",
+    "furigana",
+    "denden",
+    "markdown",
+    "unified"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexwilson/unified-ruby.git",
+    "directory": "packages/remark-ruby-annotation"
+  },
+  "bugs": "https://github.com/alexwilson/unified-ruby/issues",
+  "author": "Alex Wilson <alex@alexwilson.tech>",
+  "contributors": [
+    "Alex Wilson <alex@alexwilson.tech>"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "lib/",
+    "index.d.ts",
+    "index.js",
+    "license"
+  ],
+  "exports": "./index.js",
+  "dependencies": {
+    "@types/mdast": "^4.0.0",
+    "mdast-util-ruby": "workspace:^",
+    "micromark-extension-ruby": "workspace:^",
+    "unified": "^11.0.0"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "mdast-util-ruby",
+  "version": "0.0.0",
+  "description": "mdast extension to parse and serialize DenDen ruby annotations",
+  "license": "MIT",
+  "keywords": [
+    "mdast",
+    "mdast-util",
+    "unist",
+    "utility",
+    "util",
+    "ruby",
+    "furigana",
+    "denden",
+    "markdown",
+    "unified"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexwilson/unified-ruby.git",
+    "directory": "packages/mdast-util-ruby"
+  },
+  "bugs": "https://github.com/alexwilson/unified-ruby/issues",
+  "author": "Alex Wilson <alex@alexwilson.tech>",
+  "contributors": [
+    "Alex Wilson <alex@alexwilson.tech>"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "lib/",
+    "index.d.ts",
+    "index.js",
+    "license"
+  ],
+  "exports": "./index.js",
+  "dependencies": {
+    "@types/mdast": "^4.0.0",
+    "devlop": "^1.0.0",
+    "mdast-util-from-markdown": "^2.0.0",
+    "mdast-util-to-markdown": "^2.0.0"
+  }
+}
