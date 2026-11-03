@@ -3,3 +3,4 @@ pnpm-lock.yaml
 test/fixtures/
 packages/micromark-extension-ruby/index.js
 packages/micromark-extension-ruby/lib/
+packages/micromark-extension-ruby/util.js

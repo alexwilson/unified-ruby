@@ -42,9 +42,9 @@ export const denden = [
     html: '<p>{漢字|}</p>'
   },
   {
-    name: 'rule 4: empty second reading is not ruby',
+    name: 'converter: an empty reading after the first is allowed',
     input: '{漢字|かん|}',
-    html: '<p>{漢字|かん|}</p>'
+    html: '<p><ruby>漢<rt>かん</rt>字<rt></rt></ruby></p>'
   },
   {
     name: 'rule 4: no pipe is not ruby',

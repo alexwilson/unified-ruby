@@ -36,15 +36,24 @@
     "lib/",
     "index.d.ts",
     "index.js",
+    "util.d.ts",
+    "util.js",
     "license"
   ],
   "exports": {
-    "development": "./dev/index.js",
-    "default": "./index.js"
+    ".": {
+      "development": "./dev/index.js",
+      "default": "./index.js"
+    },
+    "./util": {
+      "development": "./dev/util.js",
+      "default": "./util.js"
+    }
   },
   "dependencies": {
     "devlop": "^1.0.0",
     "micromark-util-character": "^2.0.0",
+    "micromark-util-decode-string": "^2.0.1",
     "micromark-util-symbol": "^2.0.0",
     "micromark-util-types": "^2.0.0"
   },

@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {denden, remarkDendenRuby} from './cases.js'
-import {parse, serialize} from './util.js'
+import {parse, rubies, serialize} from './util.js'
 
 const positive = [
   ...denden.map((d) => d.input),
@@ -24,13 +24,20 @@ const positive = [
   '*{a|b}*',
   '**{強|つよ}**',
   '{𠮷野|よ|し|の}',
-  'x{ 漢字 | かんじ }x',
+  'x{漢字 | かんじ }x',
+  '{a}b|c}',
+  '{a|b{c}',
+  '{漢字||}',
+  '{漢字||じ}',
+  '{漢字|かん||}',
+  '{&amp;|x}',
+  '{a&#x7C;b|c}',
   '[{東京|とうきょう}](/tokyo)',
   '{a`|`b}',
   '{[a](/u)|b}',
   '{a\\||b}',
   '{\\\\|\\\\}',
-  '{ and | and }'
+  '{and | and }'
 ]
 
 const lookalikes = [
@@ -41,6 +48,9 @@ const lookalikes = [
   '{a|b',
   'a|b}',
   '{a}',
+  '{ 漢字|かんじ}',
+  'x{ 漢字 | かんじ }x',
+  '{漢字|}',
   'a { b',
   '`{a|b}`'
 ]
@@ -59,6 +69,14 @@ for (const [name, inputs] of /** @type {const} */ ([
     }
   })
 }
+
+test('parse, serialize, parse: full-width escapes', function () {
+  const options = {fullWidth: true}
+  for (const input of ['｛a\\｜b｜c｝', '{a\\｛b\\｝c|d}']) {
+    const tree = parse(input, options)
+    assert.deepEqual(parse(serialize(tree, options), options), tree, input)
+  }
+})
 
 test('full-width input serializes with ASCII delimiters', function () {
   const tree = parse('｛漢字｜かん｜じ｝', {fullWidth: true})
@@ -102,6 +120,34 @@ test('serializer output', async function (t) {
   await t.test('a trailing backslash is escaped', function () {
     assert.equal(one('a\\', ['b']), '{a\\\\|b}\n')
   })
+
+  await t.test('a space at the start of the base is a reference', function () {
+    assert.equal(one(' a', ['b']), '{&#x20;a|b}\n')
+  })
+
+  await t.test('line endings are references', function () {
+    assert.equal(one('a\nb', ['c\rd']), '{a&#xA;b|c&#xD;d}\n')
+    const [node] = rubies(parse(one('a\nb', ['c\rd'])))
+    assert.deepEqual([node.value, node.readings], ['a\nb', ['c\rd']])
+  })
+
+  await t.test(
+    'full-width delimiters are escaped with `fullWidth`',
+    function () {
+      /** @type {Root} */
+      const tree = {
+        type: 'root',
+        children: [
+          {
+            type: 'paragraph',
+            children: [{type: 'ruby', value: 'a｜b', readings: ['c']}]
+          }
+        ]
+      }
+      assert.equal(serialize(tree, {fullWidth: true}), '{a\\｜b|c}\n')
+      assert.equal(serialize(tree), '{a｜b|c}\n')
+    }
+  )
 
   await t.test('a lone `{` in text is not escaped', function () {
     assert.equal(serialize(parse('a { b')), 'a { b\n')

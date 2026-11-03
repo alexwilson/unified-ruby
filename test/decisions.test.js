@@ -19,7 +19,7 @@ function only(input, options) {
   return {value: found[0].value, readings: found[0].readings}
 }
 
-test('characters: anything except unescaped delimiters and line endings', async function (t) {
+test('characters: base is anything except `|`, readings anything except `}`', async function (t) {
   await t.test(
     'positive: ASCII, spaces and punctuation in the base',
     function () {
@@ -30,6 +30,25 @@ test('characters: anything except unescaped delimiters and line endings', async 
     }
   )
 
+  await t.test('positive: `{` in the base (converter)', function () {
+    assert.deepEqual(only('{a{b|c}'), {value: 'a{b', readings: ['c']})
+  })
+
+  await t.test('positive: `}` in the base (converter)', function () {
+    assert.deepEqual(only('{a}b|c}'), {value: 'a}b', readings: ['c']})
+  })
+
+  await t.test('positive: `{` in a reading (converter)', function () {
+    assert.deepEqual(only('{a|b{c}'), {value: 'a', readings: ['b{c']})
+  })
+
+  await t.test(
+    'negative: the first `}` after the `|` ends the ruby',
+    function () {
+      assert.equal(viaMicromark('{a|b}c}'), '<p><ruby>a<rt>b</rt></ruby>c}</p>')
+    }
+  )
+
   await t.test('negative: a line ending in the base', function () {
     assert.equal(viaMicromark('{漢\n字|かんじ}'), '<p>{漢\n字|かんじ}</p>')
   })
@@ -37,13 +56,34 @@ test('characters: anything except unescaped delimiters and line endings', async 
   await t.test('negative: a line ending in the reading', function () {
     assert.equal(viaMicromark('{漢字|かん\nじ}'), '<p>{漢字|かん\nじ}</p>')
   })
+})
 
-  await t.test('negative: an unescaped `{` ends the first try', function () {
-    assert.equal(viaMicromark('{a{b|c}'), '<p>{a<ruby>b<rt>c</rt></ruby></p>')
+test('empty readings (converter)', async function (t) {
+  await t.test('positive: all readings empty', function () {
+    assert.equal(
+      viaMicromark('{漢字||}'),
+      '<p><ruby>漢<rt></rt>字<rt></rt></ruby></p>'
+    )
+    assert.deepEqual(only('{漢字||}'), {value: '漢字', readings: ['', '']})
   })
 
-  await t.test('negative: a `}` before any `|`', function () {
-    assert.equal(viaMicromark('{a}b|c}'), '<p>{a}b|c}</p>')
+  await t.test('positive: one reading empty', function () {
+    assert.deepEqual(only('{漢字||じ}'), {value: '漢字', readings: ['', 'じ']})
+  })
+
+  await t.test('positive: empty readings count for mono ruby', function () {
+    assert.equal(
+      viaMicromark('{漢字|かん||}'),
+      '<p><ruby>漢字<rt>かん</rt></ruby></p>'
+    )
+    assert.deepEqual(only('{漢字|かん||}'), {
+      value: '漢字',
+      readings: ['かん', '', '']
+    })
+  })
+
+  await t.test('negative: nothing after the first `|`', function () {
+    assert.equal(viaMicromark('{漢字|}'), '<p>{漢字|}</p>')
   })
 })
 
@@ -137,26 +177,59 @@ test('mono ruby counts Unicode code points', async function (t) {
   })
 })
 
-test('whitespace is kept as written', async function (t) {
-  await t.test('positive: spaces around base and reading', function () {
-    assert.equal(
-      viaMicromark('x{ 漢字 | かんじ }x'),
-      '<p>x<ruby> 漢字 <rt> かんじ </rt></ruby>x</p>'
-    )
-  })
+test('whitespace is kept, except right after the opening `{`', async function (t) {
+  await t.test(
+    'positive: spaces at the end of the base and in the reading',
+    function () {
+      assert.equal(
+        viaMicromark('x{漢字 | かんじ }x'),
+        '<p>x<ruby>漢字 <rt> かんじ </rt></ruby>x</p>'
+      )
+    }
+  )
 
-  await t.test('negative: the node is not trimmed', function () {
-    assert.deepEqual(only('x{ 漢字 | かんじ }x'), {
-      value: ' 漢字 ',
+  await t.test('positive: the node is not trimmed', function () {
+    assert.deepEqual(only('x{漢字 | かんじ }x'), {
+      value: '漢字 ',
       readings: [' かんじ ']
     })
   })
 
-  await t.test('negative: a space counts for mono ruby', function () {
+  await t.test('positive: a space counts for mono ruby', function () {
     assert.equal(
       viaMicromark('{漢 字|かん|じ}'),
       '<p><ruby>漢 字<rt>かんじ</rt></ruby></p>'
     )
+  })
+
+  await t.test('negative: a space right after `{` (converter)', function () {
+    assert.equal(viaMicromark('x{ 漢字|かんじ}x'), '<p>x{ 漢字|かんじ}x</p>')
+    assert.equal(
+      viaMicromark('x{ 漢字 | かんじ }x'),
+      '<p>x{ 漢字 | かんじ }x</p>'
+    )
+  })
+
+  await t.test('negative: a tab right after `{`', function () {
+    assert.equal(viaMicromark('x{\t漢字|かんじ}x'), '<p>x{\t漢字|かんじ}x</p>')
+  })
+})
+
+test('character references are decoded (Q1)', async function (t) {
+  await t.test('positive: named reference in the base', function () {
+    assert.deepEqual(only('{&amp;|x}'), {value: '&', readings: ['x']})
+  })
+
+  await t.test('positive: numeric reference in a reading', function () {
+    assert.deepEqual(only('{a|&#x3042;}'), {value: 'a', readings: ['あ']})
+  })
+
+  await t.test('negative: an unknown name stays as text', function () {
+    assert.deepEqual(only('{&nosuch;|x}'), {value: '&nosuch;', readings: ['x']})
+  })
+
+  await t.test('negative: a reference is not a delimiter', function () {
+    assert.deepEqual(only('{a&#x7C;b|c}'), {value: 'a|b', readings: ['c']})
   })
 })
 
@@ -238,6 +311,27 @@ test('full-width delimiters', async function (t) {
       readings: ['かんじ']
     })
   })
+
+  await t.test(
+    'positive: escaped full-width delimiters are content (Q2)',
+    function () {
+      assert.deepEqual(only('｛a\\｜b｜c｝', fullWidth), {
+        value: 'a｜b',
+        readings: ['c']
+      })
+      assert.deepEqual(only('{a\\｛b\\｝c|d}', fullWidth), {
+        value: 'a｛b｝c',
+        readings: ['d']
+      })
+    }
+  )
+
+  await t.test(
+    'negative: without the option, `\\｜` is not an escape',
+    function () {
+      assert.deepEqual(only('{a\\｜b|c}'), {value: 'a\\｜b', readings: ['c']})
+    }
+  )
 
   await t.test('negative: off by default', function () {
     assert.equal(viaMicromark('｛漢字｜かんじ｝'), '<p>｛漢字｜かんじ｝</p>')
