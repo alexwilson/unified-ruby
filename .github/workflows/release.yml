@@ -79,19 +79,20 @@ jobs:
         with:
           name: packages
           path: dist
-      # Check against the sums from the job output too, not only the file in
-      # the artifact: a changed artifact could change its own SHA256SUMS.
+      # The job output is the list of what to publish. `sha256sum --check`
+      # ignores files that the list does not name, so publish only the named
+      # files: an extra tarball in the artifact is never published.
       - name: check tarballs
         working-directory: dist
         env:
           SUMS: ${{ needs.pack.outputs.sums }}
         run: |
-          sha256sum --check SHA256SUMS
           printf '%s\n' "$SUMS" > "$RUNNER_TEMP/SHA256SUMS"
-          sha256sum --check "$RUNNER_TEMP/SHA256SUMS"
+          sha256sum --check --strict "$RUNNER_TEMP/SHA256SUMS"
+          sha256sum --check --strict SHA256SUMS
       - name: publish
         working-directory: dist
         run: |
-          for tarball in *.tgz; do
-            npm publish "./$tarball" --access public --provenance
-          done
+          while read -r _ tarball; do
+            npm publish "./${tarball#\*}" --access public --provenance
+          done < "$RUNNER_TEMP/SHA256SUMS"
