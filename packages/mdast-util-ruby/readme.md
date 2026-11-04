@@ -181,6 +181,17 @@ The base and the readings are text nodes in `data.hChildren`. They are
 always encoded in HTML. Ruby makes only `ruby`, `rt` and `rp` elements, with
 no properties.
 
+### Supply chain
+
+This package is published from GitHub Actions with npm provenance. To check
+the packages that you installed, run `npm audit signatures`.
+
+The dependency ranges of this package are wide on purpose, so that your
+package manager can share one copy of each dependency. Your lockfile decides
+what you install. To protect your project against a bad version of a
+dependency, commit your lockfile and set a minimum release age (for example,
+`minimumReleaseAge` in pnpm).
+
 ## Related
 
 - [`micromark-extension-ruby`][micromark-extension-ruby]: the syntax.
