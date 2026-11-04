@@ -1,6 +1,6 @@
 {
   "name": "remark-ruby-annotation",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "remark plugin to support DenDen ruby annotations (`{漢字|かんじ}`)",
   "license": "MIT",
   "keywords": [
