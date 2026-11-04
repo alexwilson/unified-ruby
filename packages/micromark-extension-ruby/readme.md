@@ -42,7 +42,7 @@ use [`mdast-util-ruby`][mdast-util-ruby] with this package.
 
 ## Install
 
-This package is [ESM only][esm]. In Node.js 18 or later, install with npm:
+This package is [ESM only][esm]. Install with npm:
 
 ```sh
 npm install micromark-extension-ruby
@@ -257,7 +257,10 @@ This package is typed with [TypeScript][]. It exports the type
 
 ## Compatibility
 
-This package works with `micromark` 4 and Node.js 18 or later.
+This package works with the maintained versions of Node.js. CI tests
+each of them.
+
+This package works with `micromark` 4.
 
 ## Security
 

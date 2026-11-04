@@ -2,7 +2,7 @@
   "private": true,
   "name": "unified-ruby",
   "type": "module",
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1",
   "engines": {
     "node": ">=22"
   },
@@ -15,7 +15,8 @@
     "test-api-prod": "node --conditions production --test \"test/**/*.test.js\"",
     "test-api": "pnpm run test-api-dev && pnpm run test-api-prod",
     "test-coverage": "c8 --100 --reporter text --reporter lcov --include \"packages/**\" pnpm run test-api",
-    "test": "pnpm run build && pnpm run test-types && pnpm run test-coverage"
+    "test": "pnpm run build && pnpm run test-types && pnpm run test-coverage",
+    "test-lowest": "tsc --build --clean && tsc --build --noCheck && pnpm --filter micromark-extension-ruby run build && pnpm run test-coverage"
   },
   "prettier": {
     "bracketSpacing": false,
@@ -44,6 +45,7 @@
     "micromark-extension-ruby": "workspace:^",
     "micromark-util-types": "^2.0.3",
     "prettier": "^3.9.10",
+    "publint": "0.3.25",
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",

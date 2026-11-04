@@ -44,7 +44,7 @@ If you use remark or unified, use
 
 ## Install
 
-This package is [ESM only][esm]. In Node.js 18 or later, install with npm:
+This package is [ESM only][esm]. Install with npm:
 
 ```sh
 npm install mdast-util-ruby micromark-extension-ruby
@@ -169,8 +169,11 @@ This package is typed with [TypeScript][]. It exports the types
 
 ## Compatibility
 
-This package works with `mdast-util-from-markdown` 2,
-`mdast-util-to-markdown` 2, and Node.js 18 or later.
+This package works with the maintained versions of Node.js. CI tests
+each of them.
+
+This package works with `mdast-util-from-markdown` 2 and
+`mdast-util-to-markdown` 2.
 
 ## Security
 

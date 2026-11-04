@@ -27,9 +27,6 @@
   ],
   "sideEffects": false,
   "type": "module",
-  "engines": {
-    "node": ">=18"
-  },
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -42,7 +39,6 @@
   ],
   "exports": "./index.js",
   "dependencies": {
-    "@types/hast": "^3.0.5",
     "@types/mdast": "^4.0.0",
     "devlop": "^1.0.0",
     "mdast-util-from-markdown": "^2.0.0",
@@ -50,6 +46,7 @@
     "micromark-extension-ruby": "workspace:^"
   },
   "devDependencies": {
-    "mdast-util-to-hast": "^13.2.1"
+    "mdast-util-to-hast": "^13.2.1",
+    "@types/hast": "^3.0.0"
   }
 }

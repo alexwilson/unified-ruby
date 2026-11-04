@@ -5,16 +5,21 @@ apply to both.
 
 ## Requirements
 
-- Node.js 22 or later.
+- A maintained version of Node.js (22, 24 or 26 on 2026-11-04).
 - pnpm, the version in `packageManager` in `package.json`. To get it, run
   `corepack enable`.
 
 ## Set up
 
 1. Clone the repository.
-2. Run `corepack enable`.
-3. Run `pnpm install`.
-4. Run `pnpm test`. All tests must pass before you start a change.
+2. If your Node.js does not include Corepack (Node.js 25 and later), run
+   `npm install --global corepack`.
+3. Run `corepack enable`.
+4. Run `pnpm install`.
+5. Run `pnpm test`. All tests must pass before you start a change.
+
+Corepack installs the pnpm version in `packageManager` in `package.json`,
+and checks the download against the `sha512` hash in that field.
 
 ## Commands
 
@@ -67,11 +72,62 @@ a change to the README in the same commit.
 
 ## Dependencies
 
-The supply-chain settings are in `pnpm-workspace.yaml`:
+There are two sides with different rules:
+
+- **The repository side** (the lockfile, CI, the release) is strict. Only
+  this project pays for it.
+- **The published side** (`dependencies` in each `package.json`) is loose.
+  Each consumer pays for each limit there. The lockfile and the policy of the
+  consumer protect the consumer. Our ranges cannot.
+
+### Rules for published dependencies
+
+1. Declare what the shipped files import. Declare nothing else. A package
+   goes in `dependencies` if a shipped `.js` or `.d.ts` file imports it. A
+   JSDoc `@import` tag is a comment. It does not count.
+2. Use caret ranges (`^x.y.z`). Do not use an exact version, `*`, `latest`,
+   a git URL or a tarball URL.
+3. Use the lowest version that works as the lower bound. Do not raise a
+   lower bound only because a newer version exists. Raise it only when the
+   code needs a newer version. Write the reason in the commit body.
+4. Do not use `peerDependencies`.
+5. Do not set `engines`. Each README says that the package works with the
+   maintained versions of Node.js. CI tests those versions.
+6. Do not ship install scripts (`preinstall`, `install`, `postinstall`,
+   `prepare`).
+7. Keep the `files` list. Do not ship tests, fixtures or source maps.
+
+`test/package.test.js` checks rules 1, 4, 5, 6 and 7 on the real tarballs.
+The `lowest versions` CI job checks rule 3: it installs the lowest version
+in each range and runs the tests.
+
+### Rules for a new dependency
+
+Before you add a runtime dependency, do all of these steps. Write the
+results in the commit body.
+
+1. Make sure that you need it. If the same code is fewer than 30 lines,
+   write the code.
+2. Use a package from the unified collective, syntax-tree or micromark
+   organisations. For a package from a different source, ask a maintainer
+   first.
+3. Examine the provenance of the version:
+   `npm view <package>@<version> dist.attestations`. It must come from the
+   official repository of the package.
+4. Make sure that the package has no install scripts.
+5. Count the new transitive packages with `pnpm why <package>` after the
+   install. If the count is more than 5, ask a maintainer first.
+
+For a development dependency, do steps 3, 4 and 5.
+
+### Repository settings
+
+The supply-chain settings are in `pnpm-workspace.yaml`. Do not lower them.
 
 - `minimumReleaseAge` blocks versions that are less than 7 days old.
 - `trustPolicy: no-downgrade` blocks a version that has less trust evidence
   (for example, no provenance) than an earlier version.
+- `allowBuilds: {}` permits no dependency to run build scripts.
 
 If the install stops because of these settings, do these steps:
 
@@ -130,7 +186,10 @@ Releases are automatic. Do not publish by hand, except for the first publish
    pull request.
 2. A maintainer merges the release pull request.
 3. The `release` workflow publishes the released packages to npm with
-   provenance.
+   provenance. The `pack` job builds, tests and packs with read-only
+   permissions. The `publish` job has the npm permission. It does not check
+   out the repository or install packages. It checks the SHA-256 sums of the
+   tarballs, then runs `npm publish`.
 
 ### First publish of a new package
 

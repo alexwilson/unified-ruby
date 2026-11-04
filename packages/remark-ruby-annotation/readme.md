@@ -37,7 +37,7 @@ the two packages above directly.
 
 ## Install
 
-This package is [ESM only][esm]. In Node.js 18 or later, install with npm:
+This package is [ESM only][esm]. Install with npm:
 
 ```sh
 npm install remark-ruby-annotation
@@ -91,7 +91,8 @@ Returns nothing (`undefined`).
 Configuration (TypeScript type).
 
 - `fullWidth` (`boolean`, default: `false`): whether `｛`, `｜` and `｝` also
-  act as delimiters.
+  act as delimiters. With this option, the serializer also escapes `｛`, `｜`
+  and `｝`. It always writes ASCII delimiters.
 - `rp` (`boolean`, default: `false`): whether to add `<rp>` elements around
   each `<rt>`.
 
@@ -116,8 +117,11 @@ This package is typed with [TypeScript][]. It exports the type
 
 ## Compatibility
 
-This plugin works with `unified` 11, `remark-parse` 11, `remark-stringify`
-11, and Node.js 18 or later.
+This package works with the maintained versions of Node.js. CI tests
+each of them.
+
+This plugin works with `unified` 11, `remark-parse` 11 and
+`remark-stringify` 11.
 
 ## Security
 
