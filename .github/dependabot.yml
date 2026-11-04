@@ -4,6 +4,17 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Change a range only when the new version is outside it. Otherwise
+    # update the lockfile only, so published lower bounds stay low.
+    versioning-strategy: increase-if-necessary
+    ignore:
+      # TypeScript 7 does not apply the JSDoc `@type` of a function with
+      # `@this`, which the unified packages use. Wait for them.
+      - dependency-name: typescript
+        versions: ['>=7']
+      # Types for the oldest maintained Node.js.
+      - dependency-name: '@types/node'
+        versions: ['>=23']
     # Same wait as minimumReleaseAge in pnpm-workspace.yaml.
     cooldown:
       default-days: 7
