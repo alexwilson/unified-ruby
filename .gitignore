@@ -9,3 +9,8 @@ packages/micromark-extension-ruby/lib/
 .DS_Store
 !packages/micromark-extension-ruby/dev/index.d.ts
 packages/micromark-extension-ruby/util.js
+
+# GitHub Pages build output.
+site/vendor/
+site/_includes/importmap.html
+site/_site/

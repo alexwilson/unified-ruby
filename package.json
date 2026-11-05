@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc --build --clean && tsc --build && pnpm --filter micromark-extension-ruby run build",
+    "build-site": "pnpm run build && node site/build.js",
     "check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude && tsc --build --clean && tsc --build",
     "format": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",
     "test-types": "tsc -p test/tsconfig.json",
