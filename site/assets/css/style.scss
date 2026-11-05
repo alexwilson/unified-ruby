@@ -1,0 +1,75 @@
+---
+---
+
+@import '{{ site.theme }}';
+
+// The theme's content column is narrow. Make it wider on large screens, so
+// the editor has room.
+@media print, screen and (min-width: 961px) {
+  .wrapper {
+    width: 1040px;
+  }
+
+  section {
+    width: 700px;
+  }
+}
+
+#ruby-playground {
+  margin: 1.5em 0 2em;
+}
+
+#ruby-playground fieldset {
+  border: 0;
+  margin: 0 0 0.5em;
+  padding: 0;
+}
+
+#ruby-playground label {
+  margin-right: 1em;
+  white-space: nowrap;
+}
+
+#ruby-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 11em;
+  padding: 8px 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 0;
+  font:
+    14px/1.6 Monaco,
+    'Bitstream Vera Sans Mono',
+    'Lucida Console',
+    Terminal,
+    monospace;
+  resize: vertical;
+}
+
+#ruby-output {
+  min-height: 6em;
+  margin-top: 0.75em;
+  border: 1px solid #e5e5e5;
+  border-top-width: 3px;
+}
+
+#ruby-output.ruby-preview {
+  padding: 4px 14px;
+  font-size: 17px;
+  line-height: 2.2;
+}
+
+#ruby-output.ruby-source pre {
+  margin: 0;
+  border: 0;
+  max-height: 28em;
+  overflow: auto;
+}
+
+rt {
+  font-size: 0.55em;
+}
+
+.ruby-noscript {
+  color: #727272;
+}

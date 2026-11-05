@@ -6,3 +6,5 @@ packages/micromark-extension-ruby/lib/
 packages/micromark-extension-ruby/util.js
 # Written by release-please on each release.
 CHANGELOG.md
+site/vendor/
+site/_site/

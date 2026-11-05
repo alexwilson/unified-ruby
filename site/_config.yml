@@ -1,0 +1,6 @@
+title: unified-ruby
+description: Ruby annotations ({漢字|かんじ}) for unified, with the DenDen Markdown syntax.
+theme: jekyll-theme-minimal
+lang: en
+exclude:
+  - build.js
