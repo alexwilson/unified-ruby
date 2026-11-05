@@ -1,12 +1,14 @@
 name: pages
 on:
+  # Pull requests run only the build, so a broken site shows before merge.
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   build:
@@ -36,6 +38,7 @@ jobs:
           path: ./_site
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pages: write
